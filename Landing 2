@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Rooted Exchange | Plant Clipping PenPals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary-green: #2d6a4f;
+      --medium-green: #40916c;
+      --light-green: #52b788;
+      --soft-green: #d8f3dc;
+      --earth: #bc4749;
+      --cream: #fefae0;
+      --dark: #1b4332;
+      --charcoal: #2d3436;
+      --tiktok-dark: #010101;
+      --tiktok-cyan: #25F4EE;
+      --tiktok-pink: #FE2C55;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      color: var(--charcoal);
+      background: var(--cream);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+    a { text-decoration: none; color: inherit; transition: all 0.3s ease; }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    section { padding: 5rem 0; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--dark), var(--primary-green));
+      color: white;
+      text-align: center;
+      padding: 7rem 1rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+      animation: drift 15s infinite;
+    }
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(-2%, 2%); }
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    }
+    .hero p {
+      font-size: 1.35rem;
+      max-width: 650px;
+      margin: 0 auto 2.5rem;
+      opacity: 0.95;
+      font-weight: 300;
+    }
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--earth);
+      color: white;
+      padding: 1.1rem 2.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1.15rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .cta-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .tiktok-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--tiktok-dark);
+      color: white;
+      padding: 1.1rem 2.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1.15rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      transition: transform 0.25s, box-shadow 0.25s;
+      position: relative;
+    }
+    .tiktok-button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50px;
+      background: linear-gradient(90deg, var(--tiktok-cyan), var(--tiktok-pink));
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+    .tiktok-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .tiktok-button:hover::before { opacity: 0.85; }
+    .tiktok-icon {
+      font-size: 1.4rem;
+    }
+
+    /* ARCHWAY SECTION */
+    .archway {
+      background: white;
+      text-align: center;
+      position: relative;
+    }
+    .archway::before, .archway::after {
+      content: '🌱';
+      position: absolute;
+      font-size: 3rem;
+      opacity: 0.15;
+    }
+    .archway::before { top: 20px; left: 30px; }
+    .archway::after { bottom: 20px; right: 30px; }
+    .archway h2 {
+      color: var(--dark);
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.5px;
+    }
+    .archway p {
+      font-size: 1.2rem;
+      max-width: 750px;
+      margin: 0 auto 2.5rem;
+      color: #666;
+      font-weight: 300;
+    }
+    .steps {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 3rem;
+    }
+    .step {
+      flex: 1;
+      min-width: 280px;
+      max-width: 320px;
+      padding: 2.5rem 2rem;
+      background: linear-gradient(135deg, var(--soft-green), white);
+      border-radius: 20px;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      transition: transform 0.25s;
+    }
+    .step:hover { transform: translateY(-8px); }
+    .step-number {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary-green), var(--dark));
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.4rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .step h3 { margin-bottom: 1rem; color: var(--dark); font-weight: 600; }
+
+    /* GARDEN PREVIEW */
+    .garden-preview {
+      background: linear-gradient(180deg, var(--soft-green), var(--light-green));
+      text-align: center;
+    }
+    .garden-preview h2 {
+      color: var(--dark);
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      letter-spacing: -0.5px;
+    }
+    .garden-tagline {
+      font-size: 1.15rem;
+      max-width: 600px;
+      margin: 0 auto 3rem;
+      color: var(--dark);
+      opacity: 0.9;
+    }
+    .channel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .channel-card {
+      background: white;
+      padding: 2rem 1.75rem;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      transition: transform 0.25s, box-shadow 0.25s;
+      border-left: 4px solid var(--medium-green);
+    }
+    .channel-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+    }
+    .channel-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .channel-name { font-weight: 700; color: var(--dark); margin-bottom: 0.75rem; font-size: 1.2rem; }
+    .channel-desc { font-size: 0.98rem; color: #666; line-height: 1.5; }
+
+    /* DISCORD CTA */
+    .discord-section {
+      background: white;
+      text-align: center;
+      padding: 6rem 0;
+      position: relative;
+    }
+    .discord-section h2 {
+      color: var(--dark);
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      letter-spacing: -0.5px;
+    }
+    .discord-subtitle {
+      font-size: 1.25rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      color: #666;
+      font-weight: 300;
+    }
+    .discord-note {
+      background: linear-gradient(135deg, var(--soft-green), white);
+      padding: 1.2rem 2rem;
+      border-radius: 15px;
+      display: inline-block;
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: var(--dark);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    /* FOOTER */
+    footer {
+      background: linear-gradient(135deg, var(--dark), var(--primary-green));
+      color: white;
+      text-align: center;
+      padding: 3.5rem 0 2.5rem;
+    }
+    footer p { opacity: 0.95; font-size: 1.1rem; margin-bottom: 1rem; }
+    .footer-links { margin-top: 1.5rem; }
+    .footer-links a {
+      color: var(--soft-green);
+      margin: 0 1rem;
+      font-weight: 600;
+      border-bottom: 2px solid transparent;
+      padding-bottom: 3px;
+    }
+    .footer-links a:hover {
+      color: var(--cream);
+      border-bottom-color: var(--cream);
+    }
+    footer .copyright {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.8rem; }
+      .hero p { font-size: 1.15rem; padding: 0 1rem; }
+      .archway h2, .garden-preview h2, .discord-section h2 { font-size: 2.3rem; }
+      .archway p { font-size: 1.1rem; padding: 0 1rem; }
+      .steps { gap: 1.5rem; }
+      .step { max-width: 100%; }
+      .hero-buttons { flex-direction: column; align-items: center; }
+      .cta-button, .tiktok-button { width: 80%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>🌱 The Rooted Exchange</h1>
+        <p>A global community of plant parents swapping cuttings, sharing wisdom, and growing together—one clipping at a time.</p>
+        <div class="hero-buttons">
+          <a href="https://discord.gg/P8jj9Dtvg" class="cta-button" target="_blank">
+            💬 Join the Discord
+          </a>
+          <a href="https://www.tiktok.com/@rooted.exchange" class="tiktok-button" target="_blank">
+            <span class="tiktok-icon">🎵</span> Follow @rooted.exchange
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE ARCHWAY -->
+  <section class="archway">
+    <div class="container">
+      <h2>Enter Through The Archway</h2>
+      <p>Welcome to a space where every cutting tells a story. Whether you're propagating your first pothos or hunting rare variegated gems, you belong here.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <h3>Browse the Trade Board</h3>
+          <p>Check what's available—from beginner-friendly succulents to exotic tropicals. Find your next favorite plant friend.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <h3>Connect & Arrange</h3>
+          <p>DM the poster, discuss shipping or local pickup, and agree on a fair swap. Trust and kindness are our currency.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <h3>Grow Together</h3>
+          <p>Share your success in #trading-success, post your thriving plants in #plant-brag, and help newcomers in #plant-help.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GARDEN PREVIEW -->
+  <section class="garden-preview">
+    <div class="container">
+      <h2>Explore Our Garden</h2>
+      <p class="garden-tagline">Inside The Rooted Exchange, every corner has its purpose. Here's where you'll spend your time:</p>
+      <div class="channel-grid">
+        <div class="channel-card">
+          <div class="channel-icon">💬</div>
+          <div class="channel-name">#general</div>
+          <div class="channel-desc">Daily chatter, plant wins, and the occasional existential crisis about overwatering.</div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">🏆</div>
+          <div class="channel-name">#plant-brag</div>
+          <div class="channel-desc">Flex those healthy leaves. Show off your jungle mode. We're here to celebrate.</div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">🔄</div>
+          <div class="channel-name">#trade-board</div>
+          <div class="channel-desc">Post your cuttings, find your matches. Fair swaps only—no ghosts, please.</div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">🌿</div>
+          <div class="channel-name">#plant-help</div>
+          <div class="channel-desc">Yellowing leaves? Root rot? Drop a photo. Our collective brainpower has your back.</div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">🐾</div>
+          <div class="channel-name">#pet-corner</div>
+          <div class="channel-desc">Your plant babies aren't your only family. Show us your furry, feathered, and scaly friends.</div>
+        </div>
+        <div class="channel-card">
+          <div class="channel-icon">🎨</div>
+          <div class="channel-name">#non-planty-hobbies</div>
+          <div class="channel-desc">Because plant people have other obsessions too. Let's talk gaming, books, crafts, whatever.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCORD CTA -->
+  <section class="discord-section">
+    <div class="container">
+      <h2>Ready to Root In?</h2>
+      <p class="discord-subtitle">Join hundreds of plant lovers worldwide. Free clippings, endless advice, and a community that genuinely cares.</p>
+      <br/>
+      <a href="https://discord.gg/P8jj9Dtvg" class="cta-button" target="_blank">
+        💬 Enter The Rooted Exchange
+      </a>
+      <div class="discord-note">
+        💡 Tip: Introduce yourself in #welcome and grab your roles!
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>Made with ❤️ and chlorophyll for plant parents everywhere.</p>
+      <div class="footer-links">
+        <a href="https://discord.gg/P8jj9Dtvg" target="_blank">Discord</a> •
+        <a href="https://www.tiktok.com/@rooted.exchange" target="_blank">TikTok</a> •
+        <a href="https://discord.gg/P8jj9Dtvg" target="_blank">Join Us</a>
+      </div>
+      <p class="copyright">
+        © 2026 The Rooted Exchange. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
