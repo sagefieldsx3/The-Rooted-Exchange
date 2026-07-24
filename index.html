@@ -8,6 +8,162 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
+--midnight-purple:#1a1425;--deep-purple:#2d1b4e;--forest-green:#1e3a2f;
+--witch-green:#2d5a4d;--copper-gold:#b08968;--deep-burgundy:#5c2a3a;
+--terracotta-brown:#8c6145;--charcoal-dark:#1a1a1a;--moonlight-cream:#e8dfd0;
+--sage-muted:#7a8b70;
+}
+body{font-family:'Lato',sans-serif;color:var(--moonlight-cream);background:var(--midnight-purple);line-height:1.7;scroll-behavior:smooth}
+h1,h2,h3{font-family:'Cinzel',serif}
+a{text-decoration:none;color:inherit;transition:all .3s ease}
+.container{max-width:1100px;margin:0 auto;padding:0 2rem}
+section{padding:4rem 0}
+.hero{background:linear-gradient(135deg,var(--midnight-purple),var(--deep-purple));text-align:center;padding:7rem 1rem 6rem;position:relative;overflow:hidden;border-bottom:2px solid var(--copper-gold)}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at center,transparent 0%,var(--midnight-purple) 100%);pointer-events:none}
+.hero-content{position:relative;z-index:1}
+.hero h1{font-size:5.5rem;margin-bottom:.5rem;color:var(--moonlight-cream);text-shadow:0 0 20px rgba(176,137,104,.5),0 0 40px rgba(139,107,114,.3);letter-spacing:2px;line-height:1.1}
+.hero-subtitle{font-size:1.4rem;font-weight:600;color:var(--sage-muted);margin-bottom:2rem;letter-spacing:4px;text-transform:uppercase}
+.hero-description{font-size:1.2rem;max-width:600px;margin:0 auto 3rem;opacity:.85;font-weight:300}
+.hero-buttons{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap}
+.cta-button{display:inline-flex;align-items:center;gap:.6rem;background:linear-gradient(135deg,var(--deep-burgundy),var(--terracotta-brown));color:var(--moonlight-cream);padding:1.1rem 2.5rem;border-radius:4px;font-weight:700;font-size:1.1rem;box-shadow:0 0 20px rgba(92,42,58,.4),inset 0 0 10px rgba(255,255,255,.1);transition:transform .25s,box-shadow .25s,border-color .25s;border:2px solid var(--copper-gold);text-transform:uppercase;letter-spacing:1px}
+.cta-button:hover{transform:translateY(-5px);box-shadow:0 0 30px rgba(92,42,58,.6),inset 0 0 15px rgba(255,255,255,.2);border-color:var(--moonlight-cream)}
+.tiktok-button{display:inline-flex;align-items:center;gap:.6rem;background:transparent;color:var(--moonlight-cream);padding:1.1rem 2.5rem;border-radius:4px;font-weight:700;font-size:1.1rem;box-shadow:0 0 20px rgba(176,137,104,.3);transition:transform .25s,box-shadow .25s,background .25s;border:2px solid var(--sage-muted);text-transform:uppercase;letter-spacing:1px}
+.tiktok-button:hover{transform:translateY(-5px);box-shadow:0 0 30px rgba(176,137,104,.5);background:rgba(122,139,112,.15);border-color:var(--copper-gold)}
+.trade-button{display:inline-flex;align-items:center;gap:.6rem;background:linear-gradient(135deg,var(--forest-green),var(--witch-green));color:var(--moonlight-cream);padding:1.1rem 2.5rem;border-radius:4px;font-weight:700;font-size:1.1rem;box-shadow:0 0 20px rgba(45,90,77,.4);transition:transform .25s,box-shadow .25s,border-color .25s;border:2px solid var(--sage-muted);text-transform:uppercase;letter-spacing:1px}
+.trade-button:hover{transform:translateY(-5px);box-shadow:0 0 30px rgba(45,90,77,.6);border-color:var(--copper-gold)}
+.crescent-divider{text-align:center;font-size:1.8rem;margin:3rem 0;opacity:.5;color:var(--copper-gold);letter-spacing:.8rem}
+.archway{background:linear-gradient(180deg,var(--charcoal-dark),var(--forest-green));text-align:center;border-radius:8px;margin:0 2rem;padding:5rem 2rem;box-shadow:0 0 50px rgba(0,0,0,.5),inset 0 0 80px rgba(30,58,47,.2);border:1px solid var(--copper-gold);position:relative;overflow:hidden}
+.archway h2{color:var(--copper-gold);font-size:3.8rem;margin-bottom:1rem;line-height:1.2;text-shadow:0 0 15px rgba(176,137,104,.5)}
+.archway p{font-size:1.15rem;max-width:700px;margin:0 auto 3rem;opacity:.85;font-weight:300}
+.steps{display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;margin-top:3rem}
+.step{flex:1;min-width:270px;max-width:290px;padding:2.5rem 1.5rem;background:var(--deep-purple);border-radius:6px;position:relative;box-shadow:0 0 30px rgba(0,0,0,.4);transition:transform .25s,box-shadow .25s;border:1px solid var(--sage-muted);border-top:3px solid var(--copper-gold)}
+.step:hover{transform:translateY(-10px) scale(1.03);box-shadow:0 0 50px rgba(176,137,104,.2)}
+.step-number{position:absolute;top:-20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--deep-burgundy),var(--terracotta-brown));color:var(--moonlight-cream);width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.4rem;box-shadow:0 0 15px rgba(92,42,58,.5);border:2px solid var(--copper-gold)}
+.step h3{margin-bottom:1rem;color:var(--sage-muted);font-size:1.5rem;text-transform:uppercase;letter-spacing:1px}
+.step p{font-size:.95rem;opacity:.75;line-height:1.6;font-weight:300}
+.garden-preview{background:linear-gradient(180deg,var(--forest-green),var(--witch-green));text-align:center;border-radius:8px;margin:0 2rem;padding:5rem 2rem;box-shadow:0 0 50px rgba(0,0,0,.5);border:1px solid var(--sage-muted)}
+.garden-preview h2{color:var(--copper-gold);font-size:3.8rem;margin-bottom:1rem;line-height:1.2;text-shadow:0 0 15px rgba(176,137,104,.5)}
+.garden-tagline{font-size:1.2rem;max-width:600px;margin:0 auto 3.5rem;opacity:.85;font-weight:400}
+.channel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:2rem;margin-top:2rem}
+.channel-card{background:var(--midnight-purple);padding:2.2rem 1.75rem;border-radius:6px;box-shadow:0 0 30px rgba(0,0,0,.4);transition:transform .25s,box-shadow .25s;border:1px solid var(--sage-muted);border-top:3px solid var(--sage-muted);position:relative}
+.channel-card:hover{transform:translateY(-12px) scale(1.03);box-shadow:0 0 50px rgba(122,139,112,.2)}
+.channel-icon{font-size:2.8rem;margin-bottom:1.2rem;display:block}
+.channel-name{font-family:'Cinzel',serif;font-weight:700;color:var(--copper-gold);margin-bottom:.9rem;font-size:1.5rem;letter-spacing:1px;text-transform:uppercase}
+.channel-desc{font-size:.95rem;opacity:.75;line-height:1.6;font-weight:300}
+.discord-section{background:linear-gradient(135deg,var(--midnight-purple),var(--deep-purple));text-align:center;padding:6rem 0;border-radius:8px;margin:0 2rem;box-shadow:0 0 50px rgba(0,0,0,.5);border:1px solid var(--copper-gold);position:relative;overflow:hidden}
+.discord-section h2{color:var(--copper-gold);font-size:4.2rem;margin-bottom:1rem;line-height:1.1;text-shadow:0 0 20px rgba(176,137,104,.6)}
+.discord-subtitle{font-size:1.25rem;max-width:600px;margin:0 auto 2.5rem;opacity:.85;font-weight:300}
+.discord-note{background:var(--deep-purple);padding:1.2rem 2rem;border-radius:6px;display:inline-block;margin-top:3rem;font-size:1.05rem;color:var(--copper-gold);box-shadow:0 0 20px rgba(45,27,78,.3);border:1px solid var(--sage-muted)}
+footer{background:linear-gradient(135deg,var(--charcoal-dark),var(--midnight-purple));text-align:center;padding:4rem 0 3rem;border-top:2px solid var(--copper-gold)}
+footer p{opacity:.9;font-size:1.1rem;margin-bottom:1.5rem;font-weight:300}
+.footer-links{margin-top:2rem}
+.footer-links a{color:var(--sage-muted);margin:0 1.2rem;font-weight:600;border-bottom:1px solid transparent;padding-bottom:4px;transition:all .25s}
+.footer-links a:hover{color:var(--copper-gold);border-bottom-color:var(--copper-gold)}
+footer .copyright{margin-top:3rem;font-size:.85rem;opacity:.6;font-weight:300;letter-spacing:1px}
+@media(max-width:768px){
+.hero h1{font-size:3rem}.hero p{font-size:1.1rem;padding:0 .5rem}
+.archway,.garden-preview,.discord-section{margin:0 1rem;padding:3rem 1.5rem}
+.archway h2,.garden-preview h2,.discord-section h2{font-size:2.5rem}
+.hero-buttons{flex-direction:column;align-items:center}
+.cta-button,.tiktok-button,.trade-button{width:90%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+<div class="container">
+<div class="hero-content">
+<h1>The Rooted Exchange</h1>
+<div class="hero-subtitle">A Plant Swap &amp; Supportive Community</div>
+<p class="hero-description">A global community of plant parents swapping cuttings, sharing wisdom, and growing together — one clipping at a time.</p>
+<div class="hero-buttons">
+<a href="https://discord.gg/P8jj9Dtvg" class="cta-button" target="_blank">💬 Join the Discord</a>
+<a href="https://www.tiktok.com/@rooted.exchange" class="tiktok-button" target="_blank">🎵 Follow on TikTok</a>
+<a href="trade.html" class="trade-button">🌿 Submit a Trade</a>
+</div>
+</div>
+</div>
+</section>
+
+<div class="crescent-divider">🌙 🌿 🌙</div>
+
+<section class="archway">
+<div class="container">
+<h2>Enter Through The Archway</h2>
+<p>Welcome to a space where every cutting tells a story. Whether you're propagating your first pothos or hunting rare variegated gems, you belong here.</p>
+<div class="steps">
+<div class="step">
+<div class="step-number">I</div>
+<h3>Browse the Trade Board</h3>
+<p>Check what's available — from beginner-friendly succulents to exotic tropicals. Find your next favorite plant friend.</p>
+</div>
+<div class="step">
+<div class="step-number">II</div>
+<h3>Connect &amp; Arrange</h3>
+<p>DM the poster, discuss shipping or local pickup, and agree on a fair swap. Trust and kindness are our currency.</p>
+</div>
+<div class="step">
+<div class="step-number">III</div>
+<h3>Grow Together</h3>
+<p>Share your success in #trading-success, post your thriving plants in #plant-brag, and help newcomers in #plant-help.</p>
+</div>
+</div>
+</div>
+</section>
+
+<div class="crescent-divider">🌿 🌙 🌿</div>
+
+<section class="garden-preview">
+<div class="container">
+<h2>Explore Our Garden</h2>
+<p class="garden-tagline">Every corner has its purpose. Here's where you'll spend your time:</p>
+<div class="channel-grid">
+<div class="channel-card"><span class="channel-icon">💬</span><div class="channel-name">#general</div><p class="channel-desc">Daily chatter, plant wins, and the occasional existential crisis about overwatering.</p></div>
+<div class="channel-card"><span class="channel-icon">🏆</span><div class="channel-name">#plant-brag</div><p class="channel-desc">Flex those healthy leaves. Show off your jungle mode. We're here to celebrate.</p></div>
+<div class="channel-card"><span class="channel-icon">🔄</span><div class="channel-name">#trade-board</div><p class="channel-desc">Post your cuttings, find your matches. Fair swaps only — no ghosts, please.</p></div>
+<div class="channel-card"><span class="channel-icon">🌿</span><div class="channel-name">#plant-help</div><p class="channel-desc">Yellowing leaves? Root rot? Drop a photo. Our collective brainpower has your back.</p></div>
+<div class="channel-card"><span class="channel-icon">🐾</span><div class="channel-name">#pet-corner</div><p class="channel-desc">Your plant babies aren't your only family. Show us your furry, feathered, and scaly friends.</p></div>
+<div class="channel-card"><span class="channel-icon">🎨</span><div class="channel-name">#non-planty-hobbies</div><p class="channel-desc">Because plant people have other obsessions too. Gaming, books, crafts, whatever.</p></div>
+</div>
+</div>
+</section>
+
+<div class="crescent-divider">🌙 🌿 🌙</div>
+
+<section class="discord-section">
+<div class="container">
+<h2>Ready to Root In?</h2>
+<p class="discord-subtitle">Join hundreds of plant lovers worldwide. Free clippings, endless advice, and a community that genuinely cares.</p>
+<br>
+<a href="https://discord.gg/P8jj9Dtvg" class="cta-button" target="_blank">💬 Enter The Rooted Exchange</a>
+<div class="discord-note">Tip: Introduce yourself in #welcome and grab your roles</div>
+</div>
+</section>
+
+<footer>
+<div class="container">
+<p>Made with love and chlorophyll for plant parents everywhere.</p>
+<div class="footer-links">
+<a href="https://discord.gg/P8jj9Dtvg" target="_blank">Discord</a> ·
+<a href="https://www.tiktok.com/@rooted.exchange" target="_blank">TikTok</a> ·
+<a href="https://discord.gg/P8jj9Dtvg" target="_blank">Join Us</a>
+</div>
+<p class="copyright">© 2026 The Rooted Exchange. Rooted in magic, growing in darkness. 🔮</p>
+</div>
+</footer>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Rooted Exchange</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
 --midnight-purple:#1a1425;
 --deep-purple:#2d1b4e;
 --forest-green:#1e3a2f;
