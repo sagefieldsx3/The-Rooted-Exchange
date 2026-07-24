@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Rooted Exchange — Submit a Trade</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--midnight-purple:#1a1425;
+--deep-purple:#2d1b4e;
+--forest-green:#1e3a2f;
+--witch-green:#2d5a4d;
+--copper-gold:#b08968;
+--deep-burgundy:#5c2a3a;
+--moonlight-cream:#e8dfd0;
+--sage-muted:#7a8b70;
+--terracotta-brown:#8c6145;
+}
+body{font-family:'Lato',sans-serif;color:var(--moonlight-cream);background:var(--midnight-purple);line-height:1.7;scroll-behavior:smooth}
+h1,h2,h3{font-family:'Cinzel',serif}
+a{text-decoration:none;color:inherit;transition:all .3s ease}
+.back-link{display:inline-block;margin:1.5rem 2rem;color:var(--sage-muted);font-family:'Cinzel',serif;letter-spacing:1px;font-size:.95rem;border-bottom:1px solid transparent}
+.back-link:hover{color:var(--copper-gold);border-bottom-color:var(--copper-gold)}
+.form-container{max-width:700px;margin:2rem auto;padding:0 2rem 4rem}
+.form-header{text-align:center;margin-bottom:3rem}
+.form-header h1{font-size:3.2rem;color:var(--moonlight-cream);text-shadow:0 0 20px rgba(176,137,104,.4);margin-bottom:.5rem}
+.form-header p{font-size:1.1rem;opacity:.8;font-weight:300;max-width:500px;margin:0 auto}
+.form-card{background:linear-gradient(180deg,var(--deep-purple),var(--forest-green));padding:3rem 2.5rem;border-radius:8px;box-shadow:0 0 50px rgba(0,0,0,.4);border:1px solid var(--copper-gold)}
+.form-group{margin-bottom:1.8rem}
+.form-group label{display:block;font-family:'Cinzel',serif;font-size:.9rem;font-weight:600;color:var(--copper-gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.5rem}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:.9rem 1rem;background:var(--midnight-purple);border:1px solid var(--sage-muted);border-radius:4px;color:var(--moonlight-cream);font-family:'Lato',sans-serif;font-size:1rem;transition:border-color .25s,box-shadow .25s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--copper-gold);box-shadow:0 0 12px rgba(176,137,104,.3)}
+.form-group textarea{resize:vertical;min-height:100px}
+.form-group select{cursor:pointer}
+.form-group select option{background:var(--midnight-purple)}
+.form-row{display:flex;gap:1.5rem}
+.form-row .form-group{flex:1}
+.trade-type{display:flex;gap:1rem;flex-wrap:wrap}
+.trade-type label{flex:1;min-width:140px;text-align:center;padding:1rem;background:var(--midnight-purple);border:1px solid var(--sage-muted);border-radius:4px;cursor:pointer;font-family:'Lato',sans-serif;font-size:1rem;color:var(--moonlight-cream);text-transform:none;letter-spacing:0;transition:all .25s}
+.trade-type label:hover{border-color:var(--copper-gold);background:rgba(176,137,104,.1)}
+.trade-type input[type="radio"]{display:none}
+.trade-type input[type="radio"]:checked+span{color:var(--copper-gold);font-weight:700}
+.trade-type label:has(input:checked){border-color:var(--copper-gold);background:rgba(176,137,104,.15);box-shadow:0 0 15px rgba(176,137,104,.2)}
+.submit-btn{display:block;width:100%;padding:1.2rem;background:linear-gradient(135deg,var(--deep-burgundy),var(--terracotta-brown));color:var(--moonlight-cream);border:2px solid var(--copper-gold);border-radius:4px;font-family:'Cinzel',serif;font-weight:700;font-size:1.1rem;text-transform:uppercase;letter-spacing:2px;cursor:pointer;transition:transform .25s,box-shadow .25s;margin-top:1rem}
+.submit-btn:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(92,42,58,.5)}
+.success-message{display:none;text-align:center;padding:2rem;color:var(--copper-gold);font-family:'Cinzel',serif;font-size:1.3rem}
+.success-message.show{display:block}
+.form-note{text-align:center;margin-top:2rem;font-size:.85rem;opacity:.6;font-weight:300}
+.required{color:var(--deep-burgundy)}
+.required{color:#e8b4b8}
+@media(max-width:768px){
+.form-card{padding:2rem 1.5rem}
+.form-header h1{font-size:2.3rem}
+.form-row{flex-direction:column}
+.trade-type label{min-width:100%}
+}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">← Back to The Rooted Exchange</a>
+
+<div class="form-container">
+
+<div class="form-header">
+<h1>🌿 Submit a Trade</h1>
+<p>Have a clipping to share? Looking for something specific? Fill out the form below and it'll post directly to our Discord trade board for the community to see.</p>
+</div>
+
+<div class="form-card">
+
+<form id="tradeForm">
+
+<div class="form-group">
+<label>Your Discord Username <span class="required">*</span></label>
+<input type="text" id="username" name="username" placeholder="e.g. Sâge#1234" required>
+</div>
+
+<div class="form-group">
+<label>Email (optional — only for shipping coordination)</label>
+<input type="email" id="email" name="email" placeholder="your@email.com">
+</div>
+
+<div class="form-group">
+<label>Your Region <span class="required">*</span></label>
+<select id="region" name="region" required>
+<option value="">Select your region...</option>
+<option>North America</option>
+<option>Europe</option>
+<option>Asia Pacific</option>
+<option>South America</option>
+<option>Africa / Middle East</option>
+<option>UK & Ireland</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>Trade Type <span class="required">*</span></label>
+<div class="trade-type">
+<label><input type="radio" name="tradeType" value="🎁 Giving Away"><span>🎁 Giving Away</span></label>
+<label><input type="radio" name="tradeType" value="🔄 Swapping"><span>🔄 Swapping</span></label>
+<label><input type="radio" name="tradeType" value="🔎 Seeking"><span>🔎 Seeking</span></label>
+</div>
+</div>
+
+<div class="form-group">
+<label>Plant Name / Species <span class="required">*</span></label>
+<input type="text" id="plantName" name="plantName" placeholder="e.g. Golden Pothos, Monstera Deliciosa, etc." required>
+</div>
+
+<div class="form-row">
+<div class="form-group">
+<label>Quantity</label>
+<input type="number" id="quantity" name="quantity" placeholder="1" min="1">
+</div>
+<div class="form-group">
+<label>Condition</label>
+<select id="condition" name="condition">
+<option value="">Select...</option>
+<option>Freshly cut</option>
+<option>Rooted in water</option>
+<option>Rooted in soil</option>
+<option>Established plant</option>
+<option>Multiple nodes</option>
+</select>
+</div>
+</div>
+
+<div class="form-group">
+<label>Description / Details <span class="required">*</span></label>
+<textarea id="description" name="description" placeholder="Describe what you have, what you're looking for, shipping preferences, etc." required></textarea>
+</div>
+
+<div class="form-group">
+<label>Shipping Preference</label>
+<select id="shipping" name="shipping">
+<option value="">Select...</option>
+<option>Sender pays shipping</option>
+<option>Receiver pays shipping</option>
+<option>Split shipping costs</option>
+<option>Local pickup only</option>
+<option>Open to discussion</option>
+</select>
+</div>
+
+<button type="submit" class="submit-btn">🌙 Submit Trade Listing</button>
+
+</form>
+
+<div class="success-message" id="successMessage">
+✨ Your trade listing has been posted to our Discord! Come join the conversation: <a href="https://discord.gg/P8jj9Dtvg" style="color:var(--copper-gold);border-bottom:1px solid var(--copper-gold)">Join Discord</a>
+</div>
+
+</div>
+
+<p class="form-note">By submitting, you agree to follow our community rules. Be honest about plant health and condition. No scams, no ghosts, just good plant energy. 🌱</p>
+
+</div>
+
+<script>
+document.getElementById('tradeForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const username = document.getElementById('username').value;
+  const region = document.getElementById('region').value;
+  const tradeType = document.querySelector('input[name="tradeType"]:checked')?.value || 'Not specified';
+  const plantName = document.getElementById('plantName').value;
+  const quantity = document.getElementById('quantity').value || '1';
+  const condition = document.getElementById('condition').value || 'Not specified';
+  const description = document.getElementById('description').value;
+  const shipping = document.getElementById('shipping').value || 'Open to discussion';
+
+  const message = {
+    content: `🌿 **NEW TRADE LISTING** 🌿\n\n**User:** ${username}\n**Region:** ${region}\n**Type:** ${tradeType}\n**Plant:** ${plantName}\n**Quantity:** ${quantity}\n**Condition:** ${condition}\n**Shipping:** ${shipping}\n\n**Details:** ${description}\n\n━━━━━━━━━━━━━━━━━━━━━`
+  };
+
+  try {
+    await fetch('https://discord.com/api/webhooks/1530351018846716046/gsegTyJ8JYcfINhFbgofu8tF7N_0IzXk4sA3qH0ldrKKTL3j5xnZ2y46TCjU4FtkFWKN', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(message)
+    });
+    document.getElementById('tradeForm').style.display = 'none';
+    document.getElementById('successMessage').classList.add('show');
+  } catch (error) {
+    alert('Something went wrong. Please try again or post directly in our Discord.');
+  }
+});
+</script>
+
+</body>
+</html>
