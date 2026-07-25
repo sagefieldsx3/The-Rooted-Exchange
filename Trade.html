@@ -57,7 +57,7 @@ a{text-decoration:none;color:inherit;transition:all .3s ease}
 }
 </style>
 </head>
-<body>
+<body onload="debugLog()">
 
 <a href="index.html" class="back-link">← Back to The Rooted Exchange</a>
 
@@ -77,7 +77,7 @@ a{text-decoration:none;color:inherit;transition:all .3s ease}
 <div class="form-row">
 <div class="form-group">
 <label>Discord Username <span class="required">*</span></label>
-<input type="text" id="username" placeholder="e.g. Sage#1234" required>
+<input type="text" id="discordUsername" placeholder="e.g. Sage#1234" required>
 </div>
 <div class="form-group">
 <label>Your Region <span class="required">*</span></label>
@@ -97,8 +97,8 @@ a{text-decoration:none;color:inherit;transition:all .3s ease}
 <div class="section-label">🌿 Have for Trade?</div>
 <p class="helper-text">Are you offering something right now?</p>
 <div class="toggle-group">
-<label><input type="radio" name="haveToggle" value="yes" onchange="toggleFields('have')">Yes</label>
-<label><input type="radio" name="haveToggle" value="no" onchange="toggleFields('have')">No</label>
+<label onclick="handleToggle('have','yes')"><input type="radio" name="haveToggle" value="yes">Yes</label>
+<label onclick="handleToggle('have','no')"><input type="radio" name="haveToggle" value="no">No</label>
 </div>
 <div class="conditional-fields" id="haveFields">
 <div class="form-group">
@@ -126,8 +126,8 @@ a{text-decoration:none;color:inherit;transition:all .3s ease}
 <div class="section-label">🔎 In Search Of?</div>
 <p class="helper-text">Are you looking for something specific?</p>
 <div class="toggle-group">
-<label><input type="radio" name="wantToggle" value="yes" onchange="toggleFields('want')">Yes</label>
-<label><input type="radio" name="wantToggle" value="no" onchange="toggleFields('want')">No</label>
+<label onclick="handleToggle('want','yes')"><input type="radio" name="wantToggle" value="yes">Yes</label>
+<label onclick="handleToggle('want','no')"><input type="radio" name="wantToggle" value="no">No</label>
 </div>
 <div class="conditional-fields" id="wantFields">
 <div class="form-group">
@@ -139,7 +139,6 @@ a{text-decoration:none;color:inherit;transition:all .3s ease}
 <textarea id="wantDetails" placeholder="Specific varieties, size preferences, or just 'open to offers!'"></textarea>
 </div>
 </div>
-
 
 <button type="submit" class="submit-btn">🌙 Submit Trade Listing</button>
 
@@ -158,87 +157,108 @@ a{text-decoration:none;color:inherit;transition:all .3s ease}
 </div>
 
 <script>
-function toggleFields(section){
-  const haveRadio=document.querySelector('input[name="haveToggle"][value="yes"]');
-  const wantRadio=document.querySelector('input[name="wantToggle"][value="yes"]');
-  const haveYes=haveRadio?haveRadio.checked:false;
-  const wantYes=wantRadio?wantRadio.checked:false;
-  if(section==='have'){document.getElementById('haveFields').classList.toggle('show',haveYes);}
-  if(section==='want'){document.getElementById('wantFields').classList.toggle('show',wantYes);}
+const WEBHOOK_URL='https://discord.com/api/webhooks/1530351018846716046/gsegTyJ8JYcfINhFbgofu8tF7N_0IzXk4sA3qH0ldrKKTL3j5xnZ2y46TCjU4FtkFWKN';
+
+function debugLog(){
+  console.log('✅ Page loaded successfully');
+  const form=document.getElementById('tradeForm');
+  if(form){console.log('✅ Form found:',form.id);}else{console.error('❌ Form not found!')}
 }
 
-document.getElementById('tradeForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
+function handleToggle(section,value){
+  document.querySelectorAll(`input[name="${section}Toggle"]`).forEach(radio=>{
+    if(radio.value===value)radio.checked=true;
+  });
+  const haveYes=document.querySelector('input[name="haveToggle"][value="yes"]').checked;
+  const wantYes=document.querySelector('input[name="wantToggle"][value="yes"]').checked;
+  document.getElementById('haveFields').classList.toggle('show',haveYes);
+  document.getElementById('wantFields').classList.toggle('show',wantYes);
+  console.log(`Toggled ${section} to ${value}`);
+}
 
-  const username=document.getElementById('username').value;
-  const region=document.getElementById('region').value;
-  const haveRadio=document.querySelector('input[name="haveToggle"][value="yes"]');
-  const wantRadio=document.querySelector('input[name="wantToggle"][value="yes"]');
-  const haveYes=haveRadio?haveRadio.checked:false;
-  const wantYes=wantRadio?wantRadio.checked:false;
-
-  console.log('Form submitted!');
-  console.log('Username:',username);
-  console.log('Region:',region);
-  console.log('Have Yes:',haveYes);
-  console.log('Want Yes:',wantYes);
-
-  if(!haveYes && !wantYes){
-    alert('Please select Yes for at least one section — you need to either have something to trade or be looking for something!');
-    return;
-  }
-
-  let haveSection='';
-  if(haveYes){
-    const plant=document.getElementById('havePlant').value;
-    const cond=document.getElementById('haveCondition').value||'Not specified';
-    const det=document.getElementById('haveDetails').value;
-    if(!plant||!det){
-      alert('Please fill in all required fields under "Have for Trade"');
+document.addEventListener('DOMContentLoaded',function(){
+  console.log('DOM ready');
+  const form=document.getElementById('tradeForm');
+  if(!form){console.error('FORM NOT FOUND! Check id="tradeForm"');return;}
+  
+  form.addEventListener('submit',async function(e){
+    e.preventDefault();
+    console.log('📝 Form submit triggered!');
+    
+    const username=document.getElementById('discordUsername').value.trim();
+    const region=document.getElementById('region').value;
+    const haveRadio=document.querySelector('input[name="haveToggle"][value="yes"]');
+    const wantRadio=document.querySelector('input[name="wantToggle"][value="yes"]');
+    const haveYes=haveRadio&&haveRadio.checked;
+    const wantYes=wantRadio&&wantRadio.checked;
+    
+    console.log('Username:',username);
+    console.log('Region:',region);
+    console.log('Have Yes:',haveYes,'Want Yes:',wantYes);
+    
+    if(!username||!region){
+      alert('Please fill in Discord Username and Region!');
       return;
     }
-    haveSection=`━━━ 🌿 HAVE FOR TRADE ━━━\n**Plant:** ${plant}\n**Condition:** ${cond}\n**Details:** ${det}\n\n`;
-  }
-
-  let wantSection='';
-  if(wantYes){
-    const plant=document.getElementById('wantPlant').value;
-    const det=document.getElementById('wantDetails').value;
-    if(!plant||!det){
-      alert('Please fill in all required fields under "In Search Of"');
+    if(!haveYes&&!wantYes){
+      alert('Please click Yes on at least one section!');
       return;
     }
-    wantSection=`━━━ 🔎 IN SEARCH OF ━━━\n**Looking For:** ${plant}\n**Details:** ${det}\n\n`;
-  }
-
-  const shipping=document.getElementById('shipping').value||'Open to discussion';
-  const webhookURL='https://discord.com/api/webhooks/1530351018846716046/gsegTyJ8JYcfINhFbgofu8tF7N_0IzXk4sA3qH0ldrKKTL3j5xnZ2y46TCjU4FtkFWKN';
-
-  console.log('Webhook URL:',webhookURL);
-  console.log('Sending message...');
-
-  const msg={
-    content:`🌿 **NEW TRADE LISTING** 🌿\n\n**User:** ${username}\n**Region:** ${region}\n\n${haveSection}${wantSection}━━━ 📦 SHIPPING ━━━\n${shipping}\n\n━━━━━━━━━━━━━━━━━━━━━`
-  };
-
-  try{
-    const response=await fetch(webhookURL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(msg)
-    });
-    console.log('Response status:',response.status);
-    if(response.ok){
-      document.getElementById('tradeForm').style.display='none';
-      document.getElementById('successMessage').classList.add('show');
-    } else {
-      console.error('Discord rejected:',response.status,response.statusText);
-      alert('Discord rejected the message (Status: '+response.status+'). Check your webhook URL.');
+    
+    let haveSection='';
+    if(haveYes){
+      const plant=document.getElementById('havePlant').value.trim();
+      const cond=document.getElementById('haveCondition').value||'Not specified';
+      const det=document.getElementById('haveDetails').value.trim();
+      if(!plant||!det){
+        alert('Please fill in all fields under "Have for Trade"!');
+        return;
+      }
+      haveSection=`━━━ 🌿 HAVE FOR TRADE ━━━\n**Plant:** ${plant}\n**Condition:** ${cond}\n**Details:** ${det}\n\n`;
     }
-  }catch(err){
-    console.error('Fetch error:',err);
-    alert('Network error: '+err.message);
-  }
+    
+    let wantSection='';
+    if(wantYes){
+      const plant=document.getElementById('wantPlant').value.trim();
+      const det=document.getElementById('wantDetails').value.trim();
+      if(!plant||!det){
+        alert('Please fill in all fields under "In Search Of"!');
+        return;
+      }
+      wantSection=`━━━ 🔎 IN SEARCH OF ━━━\n**Looking For:** ${plant}\n**Details:** ${det}\n\n`;
+    }
+    
+    const shipping=document.getElementById('shipping').value||'Open to discussion';
+    const webhookURL=WEBHOOK_URL.trim();
+    
+    console.log('Webhook URL:',webhookURL.substring(0,30)+'...');
+    
+    if(webhookURL===''||webhookURL==='YOUR_WEBHOOK_URL_HERE'){
+      alert('⚠️ Webhook URL not configured! Check the code.');
+      return;
+    }
+    
+    const msg={content:`🌿 **NEW TRADE LISTING** 🌿\n\n**User:** ${username}\n**Region:** ${region}\n\n${haveSection}${wantSection}━━━ 📦 SHIPPING ━━━\n${shipping}\n\n━━━━━━━━━━━━━━━━━━━━━`};
+    
+    try{
+      console.log('🚀 Sending to Discord...');
+      const response=await fetch(webhookURL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(msg)});
+      console.log('📡 Discord response status:',response.status);
+      
+      if(response.ok){
+        console.log('✅ Success! Hiding form...');
+        document.getElementById('tradeForm').style.display='none';
+        document.getElementById('successMessage').classList.add('show');
+      }else{
+        const errText=await response.text();
+        console.error('❌ Discord rejected:',response.status,errText);
+        alert(`Discord rejected your submission (Status: ${response.status}). Check webhook permissions.`);
+      }
+    }catch(err){
+      console.error('🔴 Fetch error:',err);
+      alert('Network error: '+err.message);
+    }
+  });
 });
 </script>
 
