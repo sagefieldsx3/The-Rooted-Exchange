@@ -304,4 +304,427 @@
       input.value = '';
     };
     function clearPhoto(previewId) {
-  
+      delete pendingPhotos[previewId];
+      const el = document.getElementById(previewId);
+      if (el) el.innerHTML = '';
+    }
+
+    // ===== Data =====
+    let BOARD = [];
+    const COLLAPSED_CACHE = new Set();
+
+    async function fetchBoard() {
+      const { data, error } = await sb
+        .from('threads')
+        .select('*, posts(*, users!posts_author_id_fkey(username))')
+        .order('bumped_at', { ascending: false });
+      if (error) { console.error('fetchBoard error:', error); return []; }
+      const threads = data || [];
+      return threads.map(function (t) {
+        const rawPosts = t.posts || [];
+        return {
+          id: t.id,
+          type: t.type || 'available',
+          subject: t.subject || '(untitled trade)',
+          bumpedAt: new Date(t.bumped_at).getTime(),
+          posts: rawPosts.map(function (p) {
+            const parent = rawPosts.find(function (pp) { return pp.id === p.parent_post_id; });
+            return {
+              no: p.post_no,
+              author: (p.users && p.users.username) || 'anonymous',
+              time: new Date(p.created_at).getTime(),
+              parentId: p.parent_post_id === null ? null : (parent ? parent.post_no : null),
+              img: p.img_url,
+              sage: p.sage,
+              body: p.body
+            };
+          }).sort(function (a, b) { return a.no - b.no; })
+        };
+      });
+    }
+
+    // ===== Favorites =====
+    function getFavs() {
+      if (!ME) return [];
+      try { return JSON.parse(localStorage.getItem('rx_favs_' + ME.id) || '[]'); }
+      catch (e) { return []; }
+    }
+    function toggleFav(threadID) {
+      if (!ME) return;
+      const favs = getFavs();
+      const i = favs.indexOf(threadID);
+      if (i >= 0) favs.splice(i, 1); else favs.push(threadID);
+      localStorage.setItem('rx_favs_' + ME.id, JSON.stringify(favs));
+      render();
+    }
+
+    // ===== Search & filters =====
+    const state = { search: '', showOffering: true, showWanted: true };
+    function threadMatches(t) {
+      if (t.type === 'available' && !state.showOffering) return false;
+      if (t.type === 'wanted' && !state.showWanted) return false;
+      if (state.search) {
+        const q = state.search.toLowerCase();
+        const hay = (t.subject + ' ' + t.posts.map(function (p) { return p.body; }).join(' ')).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    }
+
+    // ===== Rendering =====
+    function renderPost(post, thread, newPostNo) {
+      const isOP = post.parentId === null;
+      const isYou = ME && post.author === ME.username;
+      const el = document.createElement('div');
+      el.className = 'post';
+      if (newPostNo && post.no === newPostNo) el.classList.add('new-post-flash');
+
+      let headParts = '';
+      if (isOP) {
+        const faved = getFavs().indexOf(thread.id) !== -1;
+        headParts += '<span class="subject" data-thread-id="' + thread.id + '">' +
+          '<button type="button" class="starbtn' + (faved ? ' faved' : '') + '" data-star-thread="' + thread.id + '">★</button>' +
+          escapeHTML(thread.subject) +
+          ' <button type="button" class="replybtn-small" data-thread-id="' + thread.id + '" data-parent-no="' + post.no + '">[Reply]</button>' +
+          '</span><br>';
+      }
+      const modCls = isMod(post.author) ? ' mod' : '';
+      const badge = isMod(post.author) ? ' <span class="modbadge">MOD</span>' : '';
+      const sagetag = post.sage ? ' <span class="sagetag">sage</span>' : '';
+      headParts += '<span class="username' + modCls + '">' +
+        escapeHTML(isYou ? post.author + ' (You)' : post.author) + badge + '</span> ' +
+        '<span class="postno" data-thread-id="' + thread.id + '" data-parent-no="' + post.no + '">No.' + post.no + '</span>' +
+        sagetag + ' <span class="timestamp">' + fmtTime(post.time) + '</span>';
+
+      el.innerHTML = '<div class="posthead">' + headParts + '</div>' +
+        '<div class="postbody">' + renderBody(post.body) + '</div>';
+
+      if (post.img) {
+        const im = document.createElement('img');
+        im.className = 'postimg';
+        im.src = post.img;
+        im.alt = 'posted photo';
+        el.appendChild(im);
+      }
+
+      const children = thread.posts
+        .filter(function (c) { return c.parentId === post.no; })
+        .sort(function (a, b) { return a.time - b.time; });
+
+      if (children.length) {
+        const collapsed = isOP && COLLAPSED_CACHE.has(thread.id) && children.length > 2;
+        const shown = collapsed ? children.slice(-2) : children;
+        const wrap = document.createElement('div');
+        wrap.className = 'replies';
+        shown.forEach(function (c) { wrap.appendChild(renderPost(c, thread, newPostNo)); });
+        el.appendChild(wrap);
+        if (isOP && children.length > 2) {
+          const bar = document.createElement('div');
+          bar.className = 'expandbar';
+          bar.setAttribute('data-expand-thread', thread.id);
+          const hiddenCount = children.length - shown.length;
+          bar.textContent = collapsed
+            ? '▸ ' + hiddenCount + ' repl' + (hiddenCount === 1 ? 'y' : 'ies') + ' hidden — click to expand'
+            : '▾ Collapse thread (show last 2 replies)';
+          el.appendChild(bar);
+        }
+      }
+      return el;
+    }
+
+    async function render(newThreadID, newPostNo) {
+      const wrap = document.getElementById('threads');
+      wrap.innerHTML = '';
+      renderUserbar();
+
+      if (!BOARD.length) BOARD = await fetchBoard();
+      BOARD.sort(function (a, b) { return b.bumpedAt - a.bumpedAt; });
+
+      const visible = BOARD.filter(threadMatches);
+      const countLabel = (state.search || !state.showOffering || !state.showWanted)
+        ? visible.length + ' thread' + (visible.length === 1 ? '' : 's') + ' match your search'
+        : visible.length + ' active thread' + (visible.length === 1 ? '' : 's');
+      document.getElementById('resultCount').textContent = countLabel;
+
+      const emptyMsg = document.getElementById('emptyMsg');
+      if (!visible.length) {
+        emptyMsg.style.display = 'block';
+        emptyMsg.textContent = state.search
+          ? 'No trades match "' + state.search + '". Either nobody\u2019s posted it yet — or opportunity. 🌱'
+          : "Board's empty. Somebody has to post the first trade.";
+        renderFavSidebar();
+        return;
+      }
+      emptyMsg.style.display = 'none';
+
+      visible.forEach(function (t) {
+        const el = document.createElement('div');
+        el.className = 'thread';
+        el.setAttribute('data-thread-id', t.id);
+        const op = t.posts.find(function (p) { return p.parentId === null; });
+        if (op) el.appendChild(renderPost(op, t, newPostNo));
+        wrap.appendChild(el);
+      });
+
+      renderFavSidebar();
+
+      if (newThreadID) {
+        setTimeout(function () {
+          const el = document.querySelector('.thread[data-thread-id="' + newThreadID + '"]');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            el.classList.add('flash-highlight');
+            setTimeout(function () { el.classList.remove('flash-highlight'); }, 1600);
+          }
+        }, 100);
+      }
+    }
+
+    function renderFavSidebar() {
+      const favList = document.getElementById('favList');
+      favList.innerHTML = '';
+      const favs = getFavs();
+      if (!favs.length) {
+        favList.innerHTML = '<div class="empty">Nothing starred yet.</div>';
+        return;
+      }
+      favs.forEach(function (fid) {
+        const t = BOARD.find(function (b) { return b.id === fid; });
+        if (!t) return;
+        const item = document.createElement('div');
+        item.className = 'favitem';
+        item.setAttribute('data-fav-id', fid);
+        item.innerHTML = '<span class="star">★</span>' + escapeHTML(t.subject || '(untitled)');
+        favList.appendChild(item);
+      });
+    }
+
+    // ===== Thread creation =====
+    async function createThread() {
+      if (IS_POSTING) return;
+      if (!requireUser()) return;
+      const subject = document.getElementById('subject').value.trim();
+      const comment = document.getElementById('comment').value.trim();
+      if (!comment) { alert('Post needs details — what are you trading?'); return; }
+
+      IS_POSTING = true;
+      try {
+        const { data: thread, error: tErr } = await sb
+          .from('threads')
+          .insert([{ subject: subject || '(untitled trade)', type: 'available', created_by: ME.id }])
+          .select()
+          .single();
+        if (tErr) throw tErr;
+
+        const { error: pErr } = await sb.from('posts').insert([{
+          thread_id: thread.id,
+          author_id: ME.id,
+          parent_post_id: null,
+          body: comment,
+          img_url: pendingPhotos['threadPreview'] || null,
+          sage: false
+        }]);
+        if (pErr) throw pErr;
+
+        document.getElementById('subject').value = '';
+        document.getElementById('comment').value = '';
+        clearPhoto('threadPreview');
+
+        BOARD = await fetchBoard();
+        await render(thread.id, null);
+      } catch (err) {
+        alert('Failed to create thread: ' + (err.message || err));
+      } finally {
+        IS_POSTING = false;
+      }
+    }
+
+    // ===== Reply modal =====
+    let replyCtx = { threadID: null, parentNo: null };
+
+    function openReply(threadID, parentNo, withQuote) {
+      if (!requireUser()) return;
+      replyCtx = { threadID: threadID, parentNo: parentNo };
+      document.getElementById('replyTitle').textContent = withQuote
+        ? 'Reply to No.' + parentNo
+        : 'Reply to Thread';
+      const ta = document.getElementById('replyText');
+      ta.value = withQuote ? '>>' + parentNo + '\n' : '';
+      document.getElementById('replyErr').textContent = '';
+      clearPhoto('replyPreview');
+      document.getElementById('sageCheck').checked = false;
+      document.getElementById('replyOverlay').style.display = 'flex';
+      ta.focus();
+    }
+
+    async function submitReply() {
+      if (IS_POSTING) return;
+      if (!requireUser()) return;
+      const text = document.getElementById('replyText').value;
+      if (!text.trim()) { document.getElementById('replyErr').textContent = 'Empty reply.'; return; }
+
+      IS_POSTING = true;
+      try {
+        const { threadID, parentNo } = replyCtx;
+        const { data: rawPosts, error: fErr } = await sb
+          .from('posts')
+          .select('id, post_no')
+          .eq('thread_id', threadID);
+        if (fErr) throw fErr;
+        const parent = (rawPosts || []).find(function (p) { return p.post_no === parentNo; });
+        if (!parent) throw new Error('Could not find the post you replied to.');
+
+        const { error: pErr } = await sb.from('posts').insert([{
+          thread_id: threadID,
+          author_id: ME.id,
+          parent_post_id: parent.id,
+          body: text,
+          img_url: pendingPhotos['replyPreview'] || null,
+          sage: !!document.getElementById('sageCheck').checked
+        }]);
+        if (pErr) throw pErr;
+
+        if (!document.getElementById('sageCheck').checked) {
+          await sb.from('threads').update({ bumped_at: new Date().toISOString() }).eq('id', threadID);
+        }
+
+        document.getElementById('replyOverlay').style.display = 'none';
+        document.getElementById('replyText').value = '';
+        clearPhoto('replyPreview');
+
+        BOARD = await fetchBoard();
+        await render(threadID, null);
+      } catch (err) {
+        document.getElementById('replyErr').textContent = err.message || 'Reply failed.';
+      } finally {
+        IS_POSTING = false;
+      }
+    }
+
+    // ===== ONE delegated click handler =====
+    document.addEventListener('click', async function (e) {
+      const t = e.target;
+
+      const removeBtn = t.closest('[data-remove-photo]');
+      if (removeBtn) { clearPhoto(removeBtn.getAttribute('data-remove-photo')); return; }
+
+      if (t.id === 'lightbox' || t.closest('#lightbox')) {
+        document.getElementById('lightbox').style.display = 'none';
+        return;
+      }
+
+      if (t.id === 'createThreadBtn') { createThread(); return; }
+      if (t.id === 'replySubmit') { submitReply(); return; }
+      if (t.id === 'replyClose') { document.getElementById('replyOverlay').style.display = 'none'; return; }
+      if (t.closest('#replyOverlay') && t.id === 'replyOverlay') {
+        document.getElementById('replyOverlay').style.display = 'none';
+        return;
+      }
+
+      if (t.id === 'signInBtn') {
+        const email = document.getElementById('loginEmail').value.trim();
+        const pw = document.getElementById('loginPassword').value;
+        if (!email || !pw) { document.getElementById('loginErr').textContent = 'Fill both fields.'; return; }
+        const { error } = await sb.auth.signInWithPassword({ email: email, password: pw });
+        if (error) { document.getElementById('loginErr').textContent = error.message; return; }
+        ME = await loadSession();
+        document.getElementById('loginOverlay').style.display = 'none';
+        BOARD = await fetchBoard();
+        await render();
+        return;
+      }
+      if (t.id === 'logoutBtn') {
+        await sb.auth.signOut();
+        ME = null;
+        location.reload();
+        return;
+      }
+      if (t.id === 'signinBtn') {
+        document.getElementById('loginOverlay').style.display = 'flex';
+        return;
+      }
+
+      const star = t.closest('.starbtn');
+      if (star) { toggleFav(star.getAttribute('data-star-thread')); return; }
+
+      const expand = t.closest('.expandbar');
+      if (expand) {
+        const tid = expand.getAttribute('data-expand-thread');
+        if (COLLAPSED_CACHE.has(tid)) COLLAPSED_CACHE.delete(tid); else COLLAPSED_CACHE.add(tid);
+        render();
+        return;
+      }
+
+      const favItem = t.closest('.favitem');
+      if (favItem && favItem.getAttribute('data-fav-id')) {
+        const tid = favItem.getAttribute('data-fav-id');
+        state.search = '';
+        state.showOffering = true; state.showWanted = true;
+        document.getElementById('searchBox').value = '';
+        document.getElementById('filterOffering').checked = true;
+        document.getElementById('filterWanted').checked = true;
+        COLLAPSED_CACHE.delete(tid);
+        render();
+        setTimeout(function () {
+          const el = document.querySelector('.thread[data-thread-id="' + tid + '"]');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            el.classList.add('flash-highlight');
+            setTimeout(function () { el.classList.remove('flash-highlight'); }, 1600);
+          }
+        }, 100);
+        return;
+      }
+
+      const postno = t.closest('.postno');
+      if (postno) {
+        openReply(postno.getAttribute('data-thread-id'),
+                  parseInt(postno.getAttribute('data-parent-no'), 10), true);
+        return;
+      }
+
+      const replyBtn = t.closest('.replybtn-small');
+      if (replyBtn) {
+        openReply(replyBtn.getAttribute('data-thread-id'),
+                  parseInt(replyBtn.getAttribute('data-parent-no'), 10), false);
+        return;
+      }
+
+      if (t.classList.contains('postimg')) { openLightbox(t.src); return; }
+
+      const subjectEl = t.closest('.subject');
+      if (subjectEl) {
+        const tid = subjectEl.getAttribute('data-thread-id');
+        const thread = BOARD.find(function (b) { return b.id === tid; });
+        if (thread) {
+          const replyCount = thread.posts.filter(function (p) { return p.parentId !== null; }).length;
+          if (replyCount > 2) {
+            if (COLLAPSED_CACHE.has(tid)) COLLAPSED_CACHE.delete(tid); else COLLAPSED_CACHE.add(tid);
+            render();
+          }
+        }
+        return;
+      }
+    });
+
+    // ===== Search & filter listeners =====
+    document.getElementById('searchBox').addEventListener('input', function () {
+      state.search = this.value.trim().toLowerCase();
+      render();
+    });
+    document.getElementById('filterOffering').addEventListener('change', function () {
+      state.showOffering = this.checked;
+      render();
+    });
+    document.getElementById('filterWanted').addEventListener('change', function () {
+      state.showWanted = this.checked;
+      render();
+    });
+
+    // ===== Boot =====
+    ME = await loadSession();
+    await render();
+  });
+  </script>
+</body>
+</html>
