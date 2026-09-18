@@ -41,7 +41,7 @@
     }
     
     .hero {
-      min-height: 80vh;
+      min-height: 55vh; /* TAMED IT DOWN FROM 80vh */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -102,7 +102,7 @@
     }
     
     .member-section {
-      padding: 100px 20px;
+      padding: 80px 20px; /* SLIGHTLY SHORTER TOO */
       text-align: center;
       background: linear-gradient(to bottom, var(--bg), var(--card-bg));
     }
@@ -123,7 +123,7 @@
     .features {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 80px 20px 40px;
+      padding: 60px 20px 40px; /* PULLED THIS UP */
     }
     
     .features-intro {
@@ -338,18 +338,17 @@
 
   <div class="top-banner">Grow Your Collection Together</div>
   
-  <!-- HERO SECTION -->
+  <!-- HERO SECTION (NO BUTTON HERE ANYMORE) -->
   <section class="hero">
     <h1>The Rooted Exchange</h1>
     <p>Exchange plant cuttings through the mail with our nationwide pen-pal network. Connect with growers to swap unique greenery.</p>
-   
   </section>
   
-  <!-- MEMBER SECTION -->
+  <!-- MEMBER SECTION (ONLY SIGNUP CTA LEFT) -->
   <section class="member-section">
     <h2>Become a Member and Connect<br>with Local Indoor Garden Growers</h2>
     <p>Sign up for a free profile to list your own propagation wins or claim your favorite stems from others right here.</p>
-    <a href="javascript:void(0)" class="cta-button" onclick="showSignup()">Get a Free Account</a>
+    <a href="javascript:void(0)" class="cta-button" onclick="showSignup()">Get a Free Account ✨</a>
   </section>
   
   <!-- FEATURES -->
@@ -363,7 +362,7 @@
         <p>Swap your favorite plant cuttings with collectors nationwide across the USA to grow your home forest for free.</p>
       </div>
       
-      <div class="feature-card green-card" onclick="window.location.href='little-roots.html'">
+      <div class="feature-card green-card" onclick="window.location.href='TRE-littleroots.html'">
         <div class="feature-icon">👶</div>
         <h3>Little Roots</h3>
         <p>Our youth program offers fun, hands-on floral education and soil science kits designed to inspire the next generation.</p>
@@ -521,7 +520,6 @@
       const { data: { session } } = await supabase.auth.getSession();
       const storedUser = localStorage.getItem('rx_username');
       if (storedUser && !session) {
-        // No active session but we had a user logged in
         localStorage.clear();
       }
     })();
