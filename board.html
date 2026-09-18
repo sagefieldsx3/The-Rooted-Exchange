@@ -55,9 +55,14 @@
     .thread.flash-highlight { animation: flashHighlight 1.5s ease-out; }
     @keyframes flashHighlight { 0% { background-color: #3d5a30; border-color: var(--accent); } 100% { background-color: #1a1d18; } }
 
-    .post { padding: 10px 12px; }
+    /* FLAT posts: chronological, no nesting */
+    .post { padding: 10px 12px; border-bottom: 1px dashed rgba(58,64,53,0.6); }
+    .post:last-child { border-bottom: none; }
+    .post.op { border-bottom: 1px solid var(--border); }
     .post.new-post-flash { animation: flashNewPost 2s ease-out; }
-    @keyframes flashNewPost { 0% { background-color: #3d5a30; border-radius: 8px; } 100% { background-color: transparent; } }
+    @keyframes flashNewPost { 0% { background-color: #3d5a30; } 100% { background-color: transparent; } }
+    .post.quote-flash { animation: quoteFlash 1.6s ease-out; }
+    @keyframes quoteFlash { 0% { background-color: #4a6b3e; outline: 1px solid var(--accent); } 100% { background-color: transparent; } }
 
     .posthead { font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; word-wrap: break-word; }
     .posthead .subject { color: var(--accent); font-weight: bold; font-size: 1rem; display: inline-block; margin-bottom: 4px; cursor: pointer; }
@@ -76,8 +81,12 @@
 
     .postbody { white-space: pre-wrap; font-size: 0.95rem; }
     .postbody .quoteline { color: var(--quote); font-style: italic; }
+    /* clickable quote links */
+    .quotelink { color: var(--quote); font-weight: bold; text-decoration: underline; cursor: pointer; }
+    .quotelink:hover { color: var(--accent); }
+    .quotelink.you-link { color: var(--gold); }
+
     .postimg { max-width: 100%; max-height: 320px; display: block; margin-top: 8px; border: 1px solid var(--border); border-radius: 8px; cursor: zoom-in; }
-    .replies { margin-left: 28px; border-left: 2px solid rgba(143,191,111,0.3); padding-left: 10px; margin-top: 8px; }
     .expandbar { text-align: left; color: var(--accent); font-size: 0.8rem; padding: 6px 12px; cursor: pointer; user-select: none; }
     .expandbar:hover { text-decoration: underline; }
 
@@ -131,7 +140,7 @@
   <div class="toolbar">
     <input type="text" id="searchBox" name="plantsearch" placeholder="Search plants... (e.g., pothos)" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search plants">
     <label class="offercolor"><input type="checkbox" id="filterOffering" checked> 🌿 Offering</label>
-    <label class="wantcolor"><input type="checkbox" id="filterWanted" checked> 🙁 Wanted</label>
+    <label class="wantcolor"><input type="checkbox" id="filterWanted" checked> 🙋 Wanted</label>
     <div class="resultcount" id="resultCount"></div>
   </div>
 
@@ -224,7 +233,6 @@
         .single();
       if (profile) return profile;
 
-      // Profile row missing — rebuild it
       let name = localStorage.getItem('rx_username') || '';
       while (!/^[a-zA-Z0-9_.-]{1,20}$/.test(name)) {
         const input = prompt("Your profile didn't finish saving. Pick a display name (letters, numbers, dots, dashes, underscores — 20 chars max):", name);
@@ -262,16 +270,32 @@
       return div.innerHTML;
     }
     function fmtTime(ts) { return new Date(ts).toLocaleString(); }
+
+    // Turn >>123 into a clickable link. If target is your own post, gold (You)
     function renderBody(text) {
       const safe = escapeHTML(text);
-      const lines = safe.split('\n').map(function (line) {
-        if (line.indexOf('&gt;&gt;') === 0) {
-          return '<span class="quoteline">' + line + '</span>';
-        }
-        return line;
+      return safe.replace(/&gt;&gt;(\d+)/g, function (match, numStr) {
+        const num = parseInt(numStr, 10);
+        const target = findPostByNo(num);
+        const youTag = (ME && target && target.author === ME.username) ? ' you-link' : '';
+        return '<span class="quotelink' + youTag + '" data-qno="' + num + '">' + match + '</span>';
       });
-      return lines.join('\n');
     }
+
+    // Global post index — built during render
+    let POST_INDEX = {}; // postNo -> post data
+    function findPostByNo(no) { return POST_INDEX[no] || null; }
+
+    function jumpToPost(no) {
+      const el = document.getElementById('post-' + no);
+      if (!el) { alert('Post No.' + no + ' not found on this page.'); return; }
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.remove('quote-flash');
+      void el.offsetWidth; // restart animation
+      el.classList.add('quote-flash');
+      setTimeout(function () { el.classList.remove('quote-flash'); }, 1700);
+    }
+
     function openLightbox(src) {
       const lb = document.getElementById('lightbox');
       lb.innerHTML = '<img src="' + src + '" alt="photo">';
@@ -322,23 +346,24 @@
       const threads = data || [];
       return threads.map(function (t) {
         const rawPosts = t.posts || [];
+        const mapped = rawPosts.map(function (p) {
+          return {
+            no: p.post_no,
+            author: (p.users && p.users.username) || 'anonymous',
+            time: new Date(p.created_at).getTime(),
+            parentId: p.parent_post_id, // kept for reply targeting, not nesting
+            img: p.img_url,
+            sage: p.sage,
+            body: p.body
+          };
+        }).sort(function (a, b) { return a.time - b.time; });
         return {
           id: t.id,
           type: t.type || 'available',
           subject: t.subject || '(untitled trade)',
           bumpedAt: new Date(t.bumped_at).getTime(),
-          posts: rawPosts.map(function (p) {
-            const parent = rawPosts.find(function (pp) { return pp.id === p.parent_post_id; });
-            return {
-              no: p.post_no,
-              author: (p.users && p.users.username) || 'anonymous',
-              time: new Date(p.created_at).getTime(),
-              parentId: p.parent_post_id === null ? null : (parent ? parent.post_no : null),
-              img: p.img_url,
-              sage: p.sage,
-              body: p.body
-            };
-          }).sort(function (a, b) { return a.no - b.no; })
+          posts: mapped,
+          opNo: (mapped.find(function (p) { return p.parentId === null; }) || {}).no || null
         };
       });
     }
@@ -371,18 +396,19 @@
       return true;
     }
 
-    // ===== Rendering =====
-    function renderPost(post, thread, newPostNo) {
+    // ===== Rendering (FLAT, chronological) =====
+    function renderPost(post, thread, isNew) {
       const isOP = post.parentId === null;
       const isYou = ME && post.author === ME.username;
       const el = document.createElement('div');
-      el.className = 'post';
-      if (newPostNo && post.no === newPostNo) el.classList.add('new-post-flash');
+      el.className = 'post' + (isOP ? ' op' : '');
+      el.id = 'post-' + post.no;
+      if (isNew) el.classList.add('new-post-flash');
 
-      let headParts = '';
+      let head = '';
       if (isOP) {
         const faved = getFavs().indexOf(thread.id) !== -1;
-        headParts += '<span class="subject" data-thread-id="' + thread.id + '">' +
+        head += '<span class="subject" data-thread-id="' + thread.id + '">' +
           '<button type="button" class="starbtn' + (faved ? ' faved' : '') + '" data-star-thread="' + thread.id + '">★</button>' +
           escapeHTML(thread.subject) +
           ' <button type="button" class="replybtn-small" data-thread-id="' + thread.id + '" data-parent-no="' + post.no + '">[Reply]</button>' +
@@ -391,12 +417,12 @@
       const modCls = isMod(post.author) ? ' mod' : '';
       const badge = isMod(post.author) ? ' <span class="modbadge">MOD</span>' : '';
       const sagetag = post.sage ? ' <span class="sagetag">sage</span>' : '';
-      headParts += '<span class="username' + modCls + '">' +
+      head += '<span class="username' + modCls + '">' +
         escapeHTML(isYou ? post.author + ' (You)' : post.author) + badge + '</span> ' +
         '<span class="postno" data-thread-id="' + thread.id + '" data-parent-no="' + post.no + '">No.' + post.no + '</span>' +
         sagetag + ' <span class="timestamp">' + fmtTime(post.time) + '</span>';
 
-      el.innerHTML = '<div class="posthead">' + headParts + '</div>' +
+      el.innerHTML = '<div class="posthead">' + head + '</div>' +
         '<div class="postbody">' + renderBody(post.body) + '</div>';
 
       if (post.img) {
@@ -406,28 +432,36 @@
         im.alt = 'posted photo';
         el.appendChild(im);
       }
+      return el;
+    }
 
-      const children = thread.posts
-        .filter(function (c) { return c.parentId === post.no; })
-        .sort(function (a, b) { return a.time - b.time; });
+    function renderThread(thread, newPostNo) {
+      const el = document.createElement('div');
+      el.className = 'thread';
+      el.setAttribute('data-thread-id', thread.id);
 
-      if (children.length) {
-        const collapsed = isOP && COLLAPSED_CACHE.has(thread.id) && children.length > 2;
-        const shown = collapsed ? children.slice(-2) : children;
-        const wrap = document.createElement('div');
-        wrap.className = 'replies';
-        shown.forEach(function (c) { wrap.appendChild(renderPost(c, thread, newPostNo)); });
-        el.appendChild(wrap);
-        if (isOP && children.length > 2) {
-          const bar = document.createElement('div');
-          bar.className = 'expandbar';
-          bar.setAttribute('data-expand-thread', thread.id);
-          const hiddenCount = children.length - shown.length;
-          bar.textContent = collapsed
-            ? '▸ ' + hiddenCount + ' repl' + (hiddenCount === 1 ? 'y' : 'ies') + ' hidden — click to expand'
-            : '▾ Collapse thread (show last 2 replies)';
-          el.appendChild(bar);
-        }
+      const op = thread.posts.find(function (p) { return p.parentId === null; });
+      const replies = thread.posts.filter(function (p) { return p.parentId !== null; });
+
+      if (op) el.appendChild(renderPost(op, thread, newPostNo === op.no));
+
+      const collapsed = COLLAPSED_CACHE.has(thread.id) && replies.length > 3;
+      const shown = collapsed ? replies.slice(-2) : replies;
+      const hidden = replies.length - shown.length;
+      if (hidden > 0) {
+        const bar = document.createElement('div');
+        bar.className = 'expandbar';
+        bar.setAttribute('data-expand-thread', thread.id);
+        bar.textContent = '▸ ' + hidden + ' repl' + (hidden === 1 ? 'y' : 'ies') + ' omitted — click to show';
+        el.appendChild(bar);
+      }
+      shown.forEach(function (r) { el.appendChild(renderPost(r, thread, newPostNo === r.no)); });
+      if (replies.length > 3) {
+        const bar = document.createElement('div');
+        bar.className = 'expandbar';
+        bar.setAttribute('data-expand-thread', thread.id);
+        bar.textContent = collapsed ? '▸ ' + hidden + ' replies omitted — click to show' : '▾ Collapse thread (show last 2 replies)';
+        el.appendChild(bar);
       }
       return el;
     }
@@ -439,6 +473,12 @@
 
       if (!BOARD.length) BOARD = await fetchBoard();
       BOARD.sort(function (a, b) { return b.bumpedAt - a.bumpedAt; });
+
+      // Build global post index for quote links
+      POST_INDEX = {};
+      BOARD.forEach(function (t) {
+        t.posts.forEach(function (p) { POST_INDEX[p.no] = p; });
+      });
 
       const visible = BOARD.filter(threadMatches);
       const countLabel = (state.search || !state.showOffering || !state.showWanted)
@@ -458,12 +498,7 @@
       emptyMsg.style.display = 'none';
 
       visible.forEach(function (t) {
-        const el = document.createElement('div');
-        el.className = 'thread';
-        el.setAttribute('data-thread-id', t.id);
-        const op = t.posts.find(function (p) { return p.parentId === null; });
-        if (op) el.appendChild(renderPost(op, t, newPostNo));
-        wrap.appendChild(el);
+        wrap.appendChild(renderThread(t, newPostNo));
       });
 
       renderFavSidebar();
@@ -574,14 +609,14 @@
         const parent = (rawPosts || []).find(function (p) { return p.post_no === parentNo; });
         if (!parent) throw new Error('Could not find the post you replied to.');
 
-        const { error: pErr } = await sb.from('posts').insert([{
+        const { data: inserted, error: pErr } = await sb.from('posts').insert([{
           thread_id: threadID,
           author_id: ME.id,
           parent_post_id: parent.id,
           body: text,
           img_url: pendingPhotos['replyPreview'] || null,
           sage: !!document.getElementById('sageCheck').checked
-        }]);
+        }]).select().single();
         if (pErr) throw pErr;
 
         if (!document.getElementById('sageCheck').checked) {
@@ -593,7 +628,7 @@
         clearPhoto('replyPreview');
 
         BOARD = await fetchBoard();
-        await render(threadID, null);
+        await render(threadID, inserted ? inserted.post_no : null);
       } catch (err) {
         document.getElementById('replyErr').textContent = err.message || 'Reply failed.';
       } finally {
@@ -613,13 +648,14 @@
         return;
       }
 
+      // QUOTE LINK — jump to and flash the quoted post
+      const ql = t.closest('.quotelink');
+      if (ql) { jumpToPost(parseInt(ql.getAttribute('data-qno'), 10)); return; }
+
       if (t.id === 'createThreadBtn') { createThread(); return; }
       if (t.id === 'replySubmit') { submitReply(); return; }
       if (t.id === 'replyClose') { document.getElementById('replyOverlay').style.display = 'none'; return; }
-      if (t.closest('#replyOverlay') && t.id === 'replyOverlay') {
-        document.getElementById('replyOverlay').style.display = 'none';
-        return;
-      }
+      if (t.id === 'replyOverlay') { document.getElementById('replyOverlay').style.display = 'none'; return; }
 
       if (t.id === 'signInBtn') {
         const email = document.getElementById('loginEmail').value.trim();
@@ -698,7 +734,7 @@
         const thread = BOARD.find(function (b) { return b.id === tid; });
         if (thread) {
           const replyCount = thread.posts.filter(function (p) { return p.parentId !== null; }).length;
-          if (replyCount > 2) {
+          if (replyCount > 3) {
             if (COLLAPSED_CACHE.has(tid)) COLLAPSED_CACHE.delete(tid); else COLLAPSED_CACHE.add(tid);
             render();
           }
