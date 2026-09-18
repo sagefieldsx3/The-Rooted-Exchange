@@ -41,7 +41,7 @@
     }
     
     .hero {
-      min-height: 30vh; /* TAMED IT DOWN FROM 80vh */
+      min-height: 30vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -102,7 +102,7 @@
     }
     
     .member-section {
-      padding: 80px 20px; /* SLIGHTLY SHORTER TOO */
+      padding: 80px 20px;
       text-align: center;
       background: linear-gradient(to bottom, var(--bg), var(--card-bg));
     }
@@ -123,7 +123,7 @@
     .features {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 60px 20px 40px; /* PULLED THIS UP */
+      padding: 60px 20px 40px;
     }
     
     .features-intro {
@@ -239,7 +239,6 @@
       border-top: 1px solid var(--border);
     }
     
-    /* Modal / Signup Overlay */
     .overlay {
       position: fixed;
       top: 0;
@@ -322,7 +321,6 @@
       cursor: pointer;
     }
     
-    /* Responsive */
     @media (max-width: 768px) {
       .feature-grid {
         grid-template-columns: 1fr;
@@ -338,20 +336,17 @@
 
   <div class="top-banner">Grow Your Collection Together</div>
   
-  <!-- HERO SECTION (NO BUTTON HERE ANYMORE) -->
   <section class="hero">
     <h1>The Rooted Exchange</h1>
     <p>Exchange plant cuttings through the mail with our nationwide pen-pal network. Connect with growers to swap unique greenery.</p>
   </section>
   
-  <!-- MEMBER SECTION (ONLY SIGNUP CTA LEFT) -->
   <section class="member-section">
     <h2>Become a Member and Connect<br>with Local Indoor Garden Growers</h2>
     <p>Sign up for a free profile to list your own propagation wins or claim your favorite stems from others right here.</p>
     <a href="javascript:void(0)" class="cta-button" onclick="showSignup()">Get a Free Account ✨</a>
   </section>
   
-  <!-- FEATURES -->
   <section class="features">
     <p class="features-intro">Connect with fellow hobbyists through our diverse community hubs designed to help you and your plants thrive together.</p>
     
@@ -376,21 +371,19 @@
     </div>
   </section>
   
-  <!-- LOGO DIVIDER -->
   <div class="logo-section">
     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
       <path fill="#8fbf6f" d="M50 10c-15 0-25 15-25 30 0 20 15 35 25 40 10-5 25-20 25-40 0-15-10-30-25-30zm-5 25c3 0 5 2 5 5s-2 5-5 5-5-2-5-5 2-5 5-5zm10 0c3 0 5 2 5 5s-2 5-5 5-5-2-5-5 2-5 5-5z"/>
     </svg>
   </div>
   
-  <!-- FOOTER -->
   <footer>
     <div class="footer-nav">
       <div class="footer-column">
         <h4>Say Hello</h4>
         <ul>
-          <li><a href="#">Welcome to our pen-pal style plant trading community</a></li>
-          <li><a href="#">Share cuttings with fellow enthusiasts nationwide</a></li>
+          <li>Welcome to our pen-pal style plant trading community</a></li>
+          <li>Share cuttings with fellow enthusiasts nationwide</a></li>
         </ul>
       </div>
       
@@ -407,7 +400,7 @@
       <div class="footer-column">
         <h4>Connect</h4>
         <ul>
-          <li><a href="https://discord.gg/98YtYwg8S">About Us</a></li>
+          <li><a href="#">About Us</a></li>
           <li><a href="#">Contact Us</a></li>
         </ul>
       </div>
@@ -415,8 +408,8 @@
       <div class="footer-column">
         <h4>Get Involved</h4>
         <ul>
-          <li><a href="#">Join our community today and exchange botanical beauty</a></li>
-          <li><a href="#">One leaf at a time. Free to trade, fun to grow.</a></li>
+          <li>Join our community today and exchange botanical beauty</a></li>
+          <li>One leaf at a time. Free to trade, fun to grow.</a></li>
         </ul>
       </div>
     </div>
@@ -426,7 +419,6 @@
     </div>
   </footer>
 
-  <!-- SIGNUP OVERLAY -->
   <div class="overlay" id="signupOverlay">
     <button class="close-btn" onclick="hideSignup()">&times;</button>
     <div class="signupbox">
@@ -440,89 +432,95 @@
     </div>
   </div>
 
+  <!-- Supabase CDN - LOADED ONCE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Main Script - Uses IIFE pattern to avoid variable conflicts -->
   <script>
-    // SUPABASE CONFIG
-    const SUPABASE_URL = 'https://enetkhptmxsevcbkpfmd.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuZXRraHB0bXhzZXZjYmtwZm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NTcyOTcsImV4cCI6MjEwNTMzMzI5N30.lmFlIdUf4oMZf3Qy412SWsqUgEYo6sQ8Z0wwRszNRhs';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // STAFF NAMES WITH GOLD COLOR
-    const STAFF = ['sage', 'kaitlyn'];
-    
-    // Modal controls
-    function showSignup() {
-      document.getElementById('signupOverlay').style.display = 'flex';
-    }
-    
-    function hideSignup() {
-      document.getElementById('signupOverlay').style.display = 'none';
-      document.getElementById('signupErr').textContent = '';
-    }
-    
-    // Auth
-    async function signUp() {
-      const name = document.getElementById('signupName').value.trim();
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value.trim();
-      const err = document.getElementById('signupErr');
+    // Wait for Supabase CDN to load
+    window.addEventListener('DOMContentLoaded', function() {
       
-      if (!name || !email || !password) { 
-        err.textContent = 'All fields required.'; 
-        return; 
-      }
+      // Initialize Supabase
+      const SUPABASE_URL = 'https://enetkhptmxsevcbkpfmd.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuZXRraHB0bXhzZXZjYmtwZm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NTcyOTcsImV4cCI6MjEwNTMzMzI5N30.lmFlIdUf4oMZf3Qy412SWsqUgEYo6sQ8Z0wwRszNRhs';
       
-      if (STAFF.includes(name.toLowerCase())) {
-        err.textContent = 'That name is reserved for site staff. Pick a different username.';
-        return;
-      }
+      window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       
-      if (!/^[a-zA-Z0-9_.-]+$/.test(name)) {
-        err.textContent = 'Letters, numbers, dots, dashes, underscores only.';
-        return;
-      }
+      // Staff names
+      const STAFF = ['sage', 'kaitlyn'];
       
-      try {
-        // Create auth user
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-          email: email,
-          password: password
-        });
+      // Global modal functions (exposed to window)
+      window.showSignup = function() {
+        document.getElementById('signupOverlay').style.display = 'flex';
+      };
+      
+      window.hideSignup = function() {
+        document.getElementById('signupOverlay').style.display = 'none';
+        document.getElementById('signupErr').textContent = '';
+      };
+      
+      // Signup handler
+      window.signUp = async function() {
+        const name = document.getElementById('signupName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value.trim();
+        const err = document.getElementById('signupErr');
         
-        if (authError) throw authError;
+        if (!name || !email || !password) { 
+          err.textContent = 'All fields required.'; 
+          return; 
+        }
         
-        // Create database profile
-        const { error: profileError } = await supabase.from('users').insert([
-          {
-            id: authData.user.id,
-            username: name,
-            email: email
-          }
-        ]);
+        if (STAFF.includes(name.toLowerCase())) {
+          err.textContent = 'That name is reserved for site staff. Pick a different username.';
+          return;
+        }
         
-        if (profileError) throw profileError;
+        if (!/^[a-zA-Z0-9_.-]+$/.test(name)) {
+          err.textContent = 'Letters, numbers, dots, dashes, underscores only.';
+          return;
+        }
         
-        // Store session
-        localStorage.setItem('rx_username', name);
-        localStorage.setItem('rx_user_id', authData.user.id);
-        
-        hideSignup();
-        alert('Welcome to The Rooted Exchange! Head over to the Trade Board to start posting.');
-        window.location.href = 'board.html';
-        
-      } catch (error) {
-        err.textContent = error.message || 'Registration failed. Try again.';
-      }
-    }
-    
-    // Session check on load
-    (async function checkSession() {
-      const { data: { session } } = await supabase.auth.getSession();
-      const storedUser = localStorage.getItem('rx_username');
-      if (storedUser && !session) {
-        localStorage.clear();
-      }
-    })();
+        try {
+          const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
+            email: email,
+            password: password
+          });
+          
+          if (authError) throw authError;
+          
+          const { error: profileError } = await window.supabaseClient.from('users').insert([
+            {
+              id: authData.user.id,
+              username: name,
+              email: email
+            }
+          ]);
+          
+          if (profileError) throw profileError;
+          
+          localStorage.setItem('rx_username', name);
+          localStorage.setItem('rx_user_id', authData.user.id);
+          
+          hideSignup();
+          alert('Welcome to The Rooted Exchange! Head over to the Trade Board to start posting.');
+          window.location.href = 'board.html';
+          
+        } catch (error) {
+          err.textContent = error.message || 'Registration failed. Try again.';
+        }
+      };
+      
+      // Session check
+      (async function checkSession() {
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        const storedUser = localStorage.getItem('rx_username');
+        if (storedUser && !session) {
+          localStorage.clear();
+        }
+      })();
+      
+    });
   </script>
 </body>
 </html>
