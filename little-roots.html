@@ -1,1 +1,492 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Little Roots — A Homeschool Plant Workshop by The Rooted Exchange</title>
+  <style>
+    :root {
+      --cream: #faf6ec;
+      --paper: #f3ecd9;
+      --leaf: #6a8f4e;
+      --leaf-dark: #4a6b33;
+      --leaf-light: #a8c686;
+      --bark: #8b6b4a;
+      --bark-dark: #5e4630;
+      --text: #3d3a2e;
+      --sun: #e9c46a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background: var(--cream);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .handwriting {
+      font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+    }
+
+    /* ---------- NAV ---------- */
+    nav {
+      background: var(--paper);
+      border-bottom: 3px solid var(--leaf);
+      padding: 12px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    nav a {
+      color: var(--leaf-dark);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    nav a:hover { text-decoration: underline; }
+
+    /* ---------- HERO ---------- */
+    header {
+      text-align: center;
+      padding: 60px 20px 50px;
+      background: linear-gradient(to bottom, #f0ead2, var(--cream));
+      border-bottom: 4px dotted var(--leaf-light);
+    }
+
+    header .eyebrow {
+      color: var(--bark);
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+      font-size: 3.2rem;
+      color: var(--leaf-dark);
+      text-shadow: 2px 2px 0px var(--leaf-light);
+    }
+
+    header .tagline {
+      font-size: 1.15rem;
+      color: var(--bark-dark);
+      font-style: italic;
+      margin-top: 12px;
+    }
+
+    header .slogan {
+      display: inline-block;
+      margin-top: 18px;
+      background: var(--leaf);
+      color: #fff;
+      padding: 8px 24px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
+    /* ---------- SHARED ---------- */
+    section { max-width: 850px; margin: 0 auto; padding: 45px 20px; }
+
+    h2 {
+      font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+      font-size: 1.9rem;
+      color: var(--leaf-dark);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    h2 .underline { color: var(--bark); }
+
+    /* ---------- WORKSHOP CARD ---------- */
+    .workshop-card {
+      background: var(--paper);
+      border: 3px solid var(--leaf);
+      border-radius: 18px;
+      padding: 30px;
+      position: relative;
+      box-shadow: 5px 5px 0px rgba(74,107,51,0.2);
+    }
+
+    .free-badge {
+      position: absolute;
+      top: -18px;
+      left: 30px;
+      background: var(--sun);
+      color: var(--bark-dark);
+      font-weight: bold;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      border: 2px solid var(--bark);
+      transform: rotate(-3deg);
+    }
+
+    .workshop-title {
+      text-align: center;
+      font-size: 1.5rem;
+      color: var(--bark-dark);
+      margin: 12px 0 5px;
+      font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+    }
+    .workshop-sub {
+      text-align: center;
+      font-style: italic;
+      color: var(--bark);
+      margin-bottom: 20px;
+    }
+
+    .workshop-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+    .detail-pill {
+      background: #fff;
+      border: 2px solid var(--leaf);
+      border-radius: 12px;
+      padding: 10px 18px;
+      text-align: center;
+      font-size: 0.9rem;
+      flex: 1 1 150px;
+      max-width: 220px;
+    }
+    .detail-pill .big { font-weight: bold; color: var(--leaf-dark); font-size: 1.05rem; display: block; }
+    .detail-pill .small { color: var(--bark); font-size: 0.78rem; }
+
+    .address-note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--bark);
+      font-style: italic;
+    }
+
+    /* ---------- ACTIVITIES ---------- */
+    .activities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+    }
+    .activity {
+      background: #fff;
+      border: 2px solid var(--leaf-light);
+      border-radius: 14px;
+      padding: 20px;
+      flex: 1 1 180px;
+      max-width: 250px;
+      text-align: center;
+      transition: transform 0.15s;
+    }
+    .activity:hover { transform: translateY(-4px); border-color: var(--leaf); }
+    .activity .icon { font-size: 2rem; margin-bottom: 8px; }
+    .activity strong { color: var(--leaf-dark); display: block; margin-bottom: 5px; }
+    .activity p { font-size: 0.85rem; color: var(--bark-dark); }
+
+    .benefitbar {
+      text-align: center;
+      margin-top: 25px;
+      color: var(--leaf-dark);
+      font-size: 0.9rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .benefitbar span { margin: 0 12px; }
+
+    /* ---------- KIT BOX ---------- */
+    .kit-section { background: var(--paper); border-top: 4px dotted var(--leaf-light); border-bottom: 4px dotted var(--leaf-light); }
+
+    .kit-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      align-items: center;
+    }
+    .kit-info { flex: 1 1 300px; }
+    .kit-info h3 { color: var(--bark-dark); font-size: 1.3rem; margin-bottom: 12px; font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive; }
+    .kit-info p { margin-bottom: 12px; font-size: 0.95rem; }
+    .kit-visual {
+      flex: 0 1 280px;
+      background: #e8dcc3;
+      border: 3px dashed var(--bark);
+      border-radius: 12px;
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--bark-dark);
+    }
+    .kit-visual .box-icon { font-size: 3rem; display: block; margin-bottom: 10px; }
+
+    .kit-includes {
+      list-style: none;
+      margin: 15px 0;
+    }
+    .kit-includes li { padding: 4px 0 4px 26px; position: relative; font-size: 0.9rem; }
+    .kit-includes li::before { content: "🌱"; position: absolute; left: 0; }
+
+    /* ---------- WORKSHEET PREVIEW ---------- */
+    .worksheet-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+    .worksheet-chip {
+      background: #fff;
+      border: 2px solid var(--bark);
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: 0.85rem;
+      color: var(--bark-dark);
+    }
+
+    /* ---------- REGISTRATION ---------- */
+    .reg-card {
+      background: #fff;
+      border: 3px solid var(--leaf);
+      border-radius: 18px;
+      padding: 30px;
+      max-width: 520px;
+      margin: 0 auto;
+      box-shadow: 5px 5px 0px rgba(74,107,51,0.2);
+    }
+    .reg-card label { display: block; color: var(--bark-dark); font-size: 0.85rem; margin: 12px 0 4px; }
+    .reg-card input {
+      width: 100%;
+      background: var(--cream);
+      border: 2px solid var(--leaf-light);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    .reg-card input:focus { outline: none; border-color: var(--leaf); }
+    .reg-card button {
+      margin-top: 18px;
+      width: 100%;
+      background: var(--leaf);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+    }
+    .reg-card button:hover { background: var(--leaf-dark); }
+    .reg-note { text-align: center; font-size: 0.78rem; color: var(--bark); font-style: italic; margin-top: 10px; }
+
+    .limited-spots {
+      text-align: center;
+      color: var(--bark-dark);
+      font-weight: bold;
+      margin-bottom: 25px;
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      background: var(--bark-dark);
+      color: var(--paper);
+      text-align: center;
+      padding: 35px 20px;
+      font-size: 0.85rem;
+    }
+    footer .foot-slogan {
+      font-family: 'Segoe Print', 'Bradley Hand', 'Comic Sans MS', cursive;
+      font-size: 1.15rem;
+      color: var(--leaf-light);
+      margin-bottom: 8px;
+    }
+    footer a { color: var(--leaf-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="TRE-main.html">← The Rooted Exchange</a>
+    <div>
+      <a href="#workshop">Workshop</a> •
+      <a href="#kits">Plant Lab Kits</a> •
+      <a href="#register">Register</a>
+    </div>
+  </nav>
+
+  <header>
+    <div class="eyebrow">The Rooted Exchange Presents</div>
+    <h1>🌱 Little Roots</h1>
+    <p class="tagline">A homeschool plant workshop.<br>Hands in the soil. Minds in the grow.</p>
+    <div class="slogan">PLANT • LEARN • GROW</div>
+  </header>
+
+  <!-- ================= WORKSHOP ================= -->
+  <section id="workshop">
+    <h2>Upcoming <span class="underline">Workshop</span></h2>
+
+    <div class="workshop-card">
+      <div class="free-badge">FREE EVENT!</div>
+      <div class="workshop-title">A Homeschool Plant Workshop</div>
+      <div class="workshop-sub">A fun, hands-on experience for homeschool kids — all supplies provided!</div>
+
+      <!-- EDIT ME: Update these details each event -->
+      <div class="workshop-details">
+        <div class="detail-pill">
+          <span class="big">Saturday</span>
+          <span class="small">Date TBD — check back soon!</span>
+        </div>
+        <div class="detail-pill">
+          <span class="big">12:00 – 2:00 PM</span>
+          <span class="small">Two hours of hands-on fun</span>
+        </div>
+        <div class="detail-pill">
+          <span class="big">Ages 5+</span>
+          <span class="small">Little gardeners of all skill levels</span>
+        </div>
+      </div>
+
+      <p class="address-note">📍 Outdoor event at a private home. Address provided after registration — this keeps our host families safe and comfy!</p>
+    </div>
+
+    <h2 style="margin-top:55px;">What We'll <span class="underline">Do</span></h2>
+
+    <div class="activities">
+      <div class="activity">
+        <span class="icon">🎨</span>
+        <strong>Decorate a Pot</strong>
+        <p>Every kid paints and personalize their very own plant pot to take home.</p>
+      </div>
+      <div class="activity">
+        <span class="icon">🪴</span>
+        <strong>Learn About Soil</strong>
+        <p>What's actually in dirt? We dig in and mix our own soil blends.</p>
+      </div>
+      <div class="activity">
+        <span class="icon">🌿</span>
+        <strong>Choose & Propagate</strong>
+        <p>Pick a plant and learn how to make new plants from cuttings — real propagation science!</p>
+      </div>
+      <div class="activity">
+        <span class="icon">🧑‍🌾</span>
+        <strong>Plant Your Creation</strong>
+        <p>Pot up your new plant baby in your freshly decorated pot.</p>
+      </div>
+      <div class="activity">
+        <span class="icon">💚</span>
+        <strong>Plant Care Tips</strong>
+        <p>Everything kids need to keep their new green friend alive and thriving.</p>
+      </div>
+    </div>
+
+    <div class="benefitbar">
+      <span>😊 Make new friends</span>
+      <span>🐛 Explore nature</span>
+      <span>💪 Build confidence</span>
+      <span>✨ Get creative</span>
+    </div>
+  </section>
+
+  <!-- ================= KITS ================= -->
+  <section class="kit-section" id="kits">
+    <h2>The Little Rooted <span class="underline">Plant Lab Kit</span></h2>
+
+    <div class="kit-grid">
+      <div class="kit-info">
+        <h3>A Kid's Plant Lab by The Rooted Exchange</h3>
+        <p>Can't make it to a workshop — or want to keep the growing going at home? The <strong>Little Rooted kit</strong> brings the whole plant lab to your doorstep.</p>
+        <p>Each box includes:</p>
+        <ul class="kit-includes">
+          <li>A Little Rooted pot, ready to decorate</li>
+          <li>Kid-sized trowel & planting tools</li>
+          <li>Seed packets & starter plants</li>
+          <li>Nutrient care tube</li>
+          <li>The full activity workbook (below!)</li>
+        </ul>
+        <p style="font-style:italic; color:var(--bark); font-size:0.85rem;"><em>A brighter world grows here.</em></p>
+      </div>
+
+      <div class="kit-visual">
+        <span class="box-icon">📦</span>
+        Little Rooted Kit Box<br>
+        <span style="font-size:0.78rem; color:var(--bark);">(product photo coming soon — imagine a delightful cardboard box stuffed with plants and joy)</span>
+      </div>
+    </div>
+
+    <h2 style="margin-top:55px;">Inside the <span class="underline">Workbook</span></h2>
+
+    <div class="worksheet-list">
+      <div class="worksheet-chip">👋 Welcome, Little Rooted!</div>
+      <div class="worksheet-chip">🌿 Let's Meet Your Plants!</div>
+      <div class="worksheet-chip">🔎 Find the Node</div>
+      <div class="worksheet-chip">✂️ Propagation Steps</div>
+      <div class="worksheet-chip">💧 Plant Care Guide</div>
+      <div class="worksheet-chip">📈 My Plant Growth Tracker</div>
+      <div class="worksheet-chip">🪴 Time to Transplant!</div>
+      <div class="worksheet-chip">✏️ Plant ID & Drawing</div>
+    </div>
+    <p style="text-align:center; margin-top:20px; color:var(--bark); font-size:0.9rem; font-style:italic;">Every activity in the workshop has a matching page — so the learning continues at home.</p>
+  </section>
+
+  <!-- ================= REGISTRATION ================= -->
+  <section id="register">
+    <h2>Save Your <span class="underline">Spot</span></h2>
+    <p class="limited-spots">Limited spots available — registration required!</p>
+
+    <div class="reg-card">
+      <form onsubmit="return registerKid(event)">
+        <label for="parentName">Parent / Guardian Name</label>
+        <input type="text" id="parentName" placeholder="Your name" required>
+
+        <label for="parentEmail">Email</label>
+        <input type="email" id="parentEmail" placeholder="you@example.com" required>
+
+        <label for="kidCount">How many little gardeners?</label>
+        <input type="number" id="kidCount" min="1" max="6" value="1" required>
+
+        <label for="kidAges">Ages of kiddos</label>
+        <input type="text" id="kidAges" placeholder="e.g., 6 and 8">
+
+        <button type="submit">Register for the Workshop</button>
+      </form>
+      <p class="reg-note">Demo mode — registrations are stored locally for now. The workshop address is sent to registered families only.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-slogan">"Good kids grow great things."</div>
+    <p>Growing a kinder, greener generation. 🌍</p>
+    <p style="margin-top:10px;">
+      <a href="TRE-main.html">The Rooted Exchange</a> •
+      <a href="https://discord.gg/98YtYwg8S" target="_blank" rel="noopener">Community Discord</a> •
+      <a href="board.html">Trade Board</a>
+    </p>
+    <p style="margin-top:15px; font-size:0.75rem; opacity:0.7;">Plants • People • Purpose — A brighter tomorrow</p>
+  </footer>
+
+<script>
+  function registerKid(e) {
+    e.preventDefault();
+    const reg = {
+      parent: document.getElementById('parentName').value.trim(),
+      email: document.getElementById('parentEmail').value.trim(),
+      kids: document.getElementById('kidCount').value,
+      ages: document.getElementById('kidAges').value.trim(),
+      time: Date.now()
+    };
+    const all = JSON.parse(localStorage.getItem('lr_registrations') || '[]');
+    all.push(reg);
+    localStorage.setItem('lr_registrations', JSON.stringify(all));
+    alert('Registered! (Demo mode) You\'d receive the workshop address and a confirmation email in the real version. 🌱');
+    e.target.reset();
+    return false;
+  }
+</script>
+
+</body>
+</html>
