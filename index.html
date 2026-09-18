@@ -482,10 +482,13 @@
         }
         
         try {
-          const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
-            email: email,
-            password: password
-          });
+                  const { data: authData, error: authError } = await window.supabaseClient.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: { username: name }  // ← add this
+          }
+        });
           
           if (authError) throw authError;
           
