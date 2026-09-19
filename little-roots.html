@@ -469,21 +469,48 @@
     <p style="margin-top:15px; font-size:0.75rem; opacity:0.7;">Plants • People • Purpose — A brighter tomorrow</p>
   </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+  const sb = window.supabase.createClient(
+    'https://enetkhptmxsevcbkpfmd.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVuZXRraHB0bXhzZXZjYmtwZm1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3NTcyOTcsImV4cCI6MjEwNTMzMzI5N30.lmFlIdUf4oMZf3Qy412SWsqUgEYo6sQ8Z0wwRszNRhs'
+  );
+
   function registerKid(e) {
     e.preventDefault();
-    const reg = {
-      parent: document.getElementById('parentName').value.trim(),
-      email: document.getElementById('parentEmail').value.trim(),
-      kids: document.getElementById('kidCount').value,
-      ages: document.getElementById('kidAges').value.trim(),
-      time: Date.now()
-    };
-    const all = JSON.parse(localStorage.getItem('lr_registrations') || '[]');
-    all.push(reg);
-    localStorage.setItem('lr_registrations', JSON.stringify(all));
-    alert('Registered! (Demo mode) You\'d receive the workshop address and a confirmation email in the real version. 🌱');
-    e.target.reset();
+    const form = e.target;
+    const btn = form.querySelector('button');
+    const parent = document.getElementById('parentName').value.trim();
+    const email = document.getElementById('parentEmail').value.trim();
+    const kids = parseInt(document.getElementById('kidCount').value, 10) || 1;
+    const ages = document.getElementById('kidAges').value.trim();
+
+    if (!parent || !email) return false;
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    sb.from('little_roots_registrations').insert([{
+      parent_name: parent,
+      email: email,
+      kid_count: kids,
+      kid_ages: ages
+    }]).then(function (res) {
+      const card = document.querySelector('.reg-card');
+      if (res.error) {
+        alert('Hmm, something went wrong. Please try again in a moment. 🌱');
+        btn.disabled = false;
+        btn.textContent = 'Register for the Workshop';
+        return;
+      }
+      card.innerHTML =
+        '<div style="text-align:center; padding:20px 10px;">' +
+        '<div style="font-size:3rem;">🌱</div>' +
+        '<h3 style="font-family: \'Segoe Print\', \'Bradley Hand\', cursive; color: var(--leaf-dark); margin:12px 0;">You\'re Registered!</h3>' +
+        '<p style="color:var(--bark-dark);">We\'ll email the workshop address to registered families soon.</p>' +
+        '<p style="font-size:0.8rem; color:var(--bark); font-style:italic; margin-top:15px;">Can\'t wait to meet your little gardeners!</p>' +
+        '</div>';
+    });
     return false;
   }
 </script>
